@@ -119,3 +119,12 @@ def delete_server(backend_name, server_name):
     if backend and server_name in backend.servers:
         del backend.servers[server_name]
     return redirect(url_for('main.index'))
+
+@backend_bp.route('/backend/<backend_name>/server/<server_name>/status')
+def get_server_status(backend_name, server_name):
+    backend = storage_service.get_backend(backend_name)
+    if backend and server_name in backend.servers:
+        server = backend.servers[server_name]
+        status = server.check_status()
+        return jsonify({'status': status})
+    return jsonify({'status': 'unknown'}), 404
