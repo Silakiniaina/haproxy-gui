@@ -12,3 +12,8 @@ def index():
     return render_template('index.html', 
                          frontends=storage_service.frontends, 
                          backends=storage_service.backends)
+
+
+def init_routes(service: StorageService):
+    global storage_service
+    storage_service = service
