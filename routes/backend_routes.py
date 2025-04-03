@@ -58,3 +58,30 @@ def edit_backend(name):
 def delete_backend(name):
     storage_service.delete_backend(name)
     return redirect(url_for('main.index'))
+
+@backend_bp.route('/backend/<backend_name>/server/add', methods=['GET', 'POST'])
+def add_server(backend_name):
+    backend = storage_service.get_backend(backend_name)
+    if not backend:
+        return redirect(url_for('main.index'))
+    
+    if request.method == 'POST':
+        server = Server(
+            name=request.form['name'],
+            host=request.form['host'],
+            port=int(request.form['port']),
+            weight=int(request.form.get('weight', 1)),
+            check='check' in request.form,
+            check_port=int(request.form['check_port']) if request.form.get('check_port') else None,
+            check_inter=request.form.get('check_inter', '2s'),
+            check_fall=int(request.form.get('check_fall', 3)),
+            check_rise=int(request.form.get('check_rise', 2)),
+            maxconn=int(request.form.get('maxconn', 1000)),
+            backup='backup' in request.form,
+            disabled='disabled' in request.form,
+            maintenance='maintenance' in request.form
+        )
+        server.check_status()  # Check status immediately after creation
+        backend.servers[server.name] = server
+        return redirect(url_for('main.index'))
+    return render_template('server_form.html', backend_name=backend_name)
