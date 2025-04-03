@@ -42,3 +42,8 @@ def edit_frontend(name):
         frontend.backends = request.form.getlist('backends')
         return redirect(url_for('main.index'))
     return render_template('frontend_form.html', frontend=frontend, backends=storage_service.backends)  
+
+@frontend_bp.route('/frontend/<name>/delete')
+def delete_frontend(name):
+    storage_service.delete_frontend(name)
+    return redirect(url_for('main.index'))
