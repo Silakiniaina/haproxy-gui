@@ -41,3 +41,26 @@ class HAProxyConfigGenerator:
             "    log global",
             ""
         ]
+
+    def _generate_frontend_config(self, frontend: Frontend) -> list:
+        config_lines = [
+            f"frontend {frontend.name}",
+            f"    mode {frontend.mode}",
+            f"    bind {frontend.bind}"
+        ]
+        if frontend.maxconn:
+            config_lines.append(f"    maxconn {frontend.maxconn}")
+        if frontend.timeout_client:
+            config_lines.append(f"    timeout client {frontend.timeout_client}")
+        if frontend.client_fin_timeout:
+            config_lines.append(f"    timeout client-fin {frontend.client_fin_timeout}")
+        if frontend.ssl:
+            config_lines.append("    bind {frontend.bind} ssl")
+            if frontend.ssl_certificate:
+                config_lines.append(f"    ssl crt {frontend.ssl_certificate}")
+            if frontend.ssl_ciphers:
+                config_lines.append(f"    ssl-default-bind-ciphers {frontend.ssl_ciphers}")
+        for backend in frontend.backends:
+            config_lines.append(f"    default_backend {backend}")
+        config_lines.append("")
+        return config_lines
