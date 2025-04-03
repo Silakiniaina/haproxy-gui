@@ -47,3 +47,7 @@ def edit_frontend(name):
 def delete_frontend(name):
     storage_service.delete_frontend(name)
     return redirect(url_for('main.index'))
+
+def init_routes(service: StorageService):
+    global storage_service
+    storage_service = service
