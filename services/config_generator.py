@@ -29,3 +29,15 @@ class HAProxyConfigGenerator:
             "    log /dev/log local1 notice",
             ""
         ]
+
+    def _generate_defaults_section(self) -> list:
+        return [
+            "defaults",
+            "    mode http",
+            "    timeout connect 5000ms",
+            "    timeout client 50000ms",
+            "    timeout server 50000ms",
+            "    option httplog",
+            "    log global",
+            ""
+        ]
