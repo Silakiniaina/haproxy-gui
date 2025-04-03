@@ -53,3 +53,8 @@ def edit_backend(name):
     for server in backend.servers.values():
         server.check_status()
     return render_template('backend_form.html', backend=backend)
+
+@backend_bp.route('/backend/<name>/delete')
+def delete_backend(name):
+    storage_service.delete_backend(name)
+    return redirect(url_for('main.index'))
