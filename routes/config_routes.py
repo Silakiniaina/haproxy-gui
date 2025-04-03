@@ -31,3 +31,9 @@ def validate_config():
     except Exception as e:
         # En cas d'erreur, retourner une erreur
         return f"Erreur lors de la validation de la configuration : {str(e)}", 500
+
+# Endpoint pour retourner vers l'index
+@config_bp.route('/config/back')
+def go_back():
+    return redirect(url_for('main.index'))
+
