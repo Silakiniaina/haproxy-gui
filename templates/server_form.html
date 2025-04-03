@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Modifier' if server else 'Ajouter' }} Serveur - HAProxy Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">{{ 'Modifier' if server else 'Ajouter' }} un Serveur au Backend {{ backend_name }}</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <form method="POST">
+                <!-- Basic Settings -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Paramètres de Base</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="name" class="block text-gray-700 font-semibold mb-2">Nom du serveur</label>
+                            <input type="text" id="name" name="name" 
+                                   value="{{ server.name if server else '' }}"
+                                   {{ 'readonly' if server else 'required' }}
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="host" class="block text-gray-700 font-semibold mb-2">Hôte</label>
+                            <input type="text" id="host" name="host" 
+                                   value="{{ server.host if server else '' }}"
+                                   required
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="port" class="block text-gray-700 font-semibold mb-2">Port</label>
+                            <input type="number" id="port" name="port" 
+                                   value="{{ server.port if server else '' }}"
+                                   required
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="weight" class="block text-gray-700 font-semibold mb-2">Poids</label>
+                            <input type="number" id="weight" name="weight" 
+                                   value="{{ server.weight if server else '1' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Check Settings -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Paramètres de Contrôle de Santé</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="check" 
+                                       {{ 'checked' if server and server.check else '' }}
+                                       class="form-checkbox">
+                                <span class="text-gray-700 font-semibold">Activer le health check</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label for="check_port" class="block text-gray-700 font-semibold mb-2">Port de contrôle</label>
+                            <input type="number" id="check_port" name="check_port"
+                                   value="{{ server.check_port if server and server.check_port else '' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="check_inter" class="block text-gray-700 font-semibold mb-2">Intervalle de contrôle</label>
+                            <input type="text" id="check_inter" name="check_inter" 
+                                   value="{{ server.check_inter if server else '2s' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="check_fall" class="block text-gray-700 font-semibold mb-2">Seuil d'échec</label>
+                            <input type="number" id="check_fall" name="check_fall" 
+                                   value="{{ server.check_fall if server else '3' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="check_rise" class="block text-gray-700 font-semibold mb-2">Seuil de rétablissement</label>
+                            <input type="number" id="check_rise" name="check_rise" 
+                                   value="{{ server.check_rise if server else '2' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection Settings -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Paramètres de Connexion</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="maxconn" class="block text-gray-700 font-semibold mb-2">Connexions max</label>
+                            <input type="number" id="maxconn" name="maxconn" 
+                                   value="{{ server.maxconn if server else '1000' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Server State -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">État du Serveur</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="backup" 
+                                       {{ 'checked' if server and server.backup else '' }}
+                                       class="form-checkbox">
+                                <span class="text-gray-700 font-semibold">Serveur de secours</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="disabled" 
+                                       {{ 'checked' if server and server.disabled else '' }}
+                                       class="form-checkbox">
+                                <span class="text-gray-700 font-semibold">Désactivé</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="maintenance" 
+                                       {{ 'checked' if server and server.maintenance else '' }}
+                                       class="form-checkbox">
+                                <span class="text-gray-700 font-semibold">Maintenance</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex justify-between">
+                    <a href="{{ url_for('main.index') }}" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600">
+                        Annuler
+                    </a>
+                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+                        {{ 'Modifier' if server else 'Ajouter' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
