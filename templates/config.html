@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration HAProxy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Configuration HAProxy</h1>
+            <div class="flex justify-around items-center space-x-4">
+                <button onclick="copyConfig()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                            <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                        </svg>
+                        Copier
+                    </span>
+                </button>
+
+                <form action="{{ url_for('config.validate_config') }}" method="POST" class="inline-block">
+                    <!-- Hidden field to pass the config data -->
+                    <input type="hidden" name="config_data" value="{{ config }}">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        <span class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                            Valider
+                        </span>
+                    </button>
+                </form>                
+
+                <a href="{{ url_for('main.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                    <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                        </svg>
+                        Retour
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <pre id="config" class="bg-gray-100 p-4 rounded overflow-x-auto text-sm font-mono"><code>{{ config }}</code></pre>
+        </div>
+    </div>
+
+    <script>
+        function copyConfig() {
+            const config = document.getElementById('config').textContent;
+            navigator.clipboard.writeText(config).then(() => {
+                alert('Configuration copiée dans le presse-papiers !');
+            }).catch(err => {
+                console.error('Erreur lors de la copie :', err);
+                alert('Erreur lors de la copie de la configuration');
+            });
+        }
+    </script>
+</body>
+</html>
