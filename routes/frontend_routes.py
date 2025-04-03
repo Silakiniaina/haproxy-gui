@@ -21,4 +21,4 @@ def add_frontend():
         )
         storage_service.add_frontend(frontend)
         return redirect(url_for('main.index'))
-    return render_template('frontend_form.html', backends=storage_service.backends)
+    return render_template('frontend_form.html', backends=storage_service.backends)    
