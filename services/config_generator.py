@@ -19,3 +19,13 @@ class HAProxyConfigGenerator:
             config_lines.extend(self._generate_backend_config(backend))
         
         return "\n".join(config_lines)
+
+    def _generate_global_section(self) -> list:
+        return [
+            "global",
+            "    daemon",
+            "    maxconn 256",
+            "    log /dev/log local0",
+            "    log /dev/log local1 notice",
+            ""
+        ]
