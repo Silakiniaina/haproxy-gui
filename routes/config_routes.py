@@ -37,3 +37,8 @@ def validate_config():
 def go_back():
     return redirect(url_for('main.index'))
 
+# Function to initialize the config generator
+def init_routes(generator: HAProxyConfigGenerator):
+    global config_generator
+    config_generator = generator
+
