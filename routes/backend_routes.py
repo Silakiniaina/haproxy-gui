@@ -112,3 +112,10 @@ def edit_server(backend_name, server_name):
     
     server.check_status()  # Check status before rendering form
     return render_template('server_form.html', backend_name=backend_name, server=server)
+
+@backend_bp.route('/backend/<backend_name>/server/<server_name>/delete')
+def delete_server(backend_name, server_name):
+    backend = storage_service.get_backend(backend_name)
+    if backend and server_name in backend.servers:
+        del backend.servers[server_name]
+    return redirect(url_for('main.index'))
