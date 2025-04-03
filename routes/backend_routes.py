@@ -85,3 +85,30 @@ def add_server(backend_name):
         backend.servers[server.name] = server
         return redirect(url_for('main.index'))
     return render_template('server_form.html', backend_name=backend_name)
+
+@backend_bp.route('/backend/<backend_name>/server/<server_name>/edit', methods=['GET', 'POST'])
+def edit_server(backend_name, server_name):
+    backend = storage_service.get_backend(backend_name)
+    if not backend or server_name not in backend.servers:
+        return redirect(url_for('main.index'))
+    
+    server = backend.servers[server_name]
+    
+    if request.method == 'POST':
+        server.host = request.form['host']
+        server.port = int(request.form['port'])
+        server.weight = int(request.form.get('weight', 1))
+        server.check = 'check' in request.form
+        server.check_port = int(request.form['check_port']) if request.form.get('check_port') else None
+        server.check_inter = request.form.get('check_inter', '2s')
+        server.check_fall = int(request.form.get('check_fall', 3))
+        server.check_rise = int(request.form.get('check_rise', 2))
+        server.maxconn = int(request.form.get('maxconn', 1000))
+        server.backup = 'backup' in request.form
+        server.disabled = 'disabled' in request.form
+        server.maintenance = 'maintenance' in request.form
+        server.check_status()  # Check status after update
+        return redirect(url_for('main.index'))
+    
+    server.check_status()  # Check status before rendering form
+    return render_template('server_form.html', backend_name=backend_name, server=server)
