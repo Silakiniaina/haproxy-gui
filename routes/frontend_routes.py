@@ -21,4 +21,24 @@ def add_frontend():
         )
         storage_service.add_frontend(frontend)
         return redirect(url_for('main.index'))
-    return render_template('frontend_form.html', backends=storage_service.backends)    
+    return render_template('frontend_form.html', backends=storage_service.backends)  
+
+
+@frontend_bp.route('/frontend/<name>/edit', methods=['GET', 'POST'])
+def edit_frontend(name):
+    frontend = storage_service.get_frontend(name)
+    if not frontend:
+        return redirect(url_for('main.index'))
+    
+    if request.method == 'POST':
+        frontend.bind = request.form['bind']
+        frontend.mode = request.form['mode']
+        frontend.maxconn = int(request.form.get('maxconn', 10000))
+        frontend.timeout_client = request.form.get('timeout_client', '50s')
+        frontend.client_fin_timeout = request.form.get('client_fin_timeout', '1s')
+        frontend.ssl = 'ssl' in request.form
+        frontend.ssl_certificate = request.form.get('ssl_certificate')
+        frontend.ssl_ciphers = request.form.get('ssl_ciphers')
+        frontend.backends = request.form.getlist('backends')
+        return redirect(url_for('main.index'))
+    return render_template('frontend_form.html', frontend=frontend, backends=storage_service.backends)  
