@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Modifier' if backend else 'Ajouter' }} Backend - HAProxy Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">{{ 'Modifier' if backend else 'Ajouter' }} Backend</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <form method="POST">
+                <!-- Basic Settings -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Paramètres de Base</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label for="name" class="block text-gray-700 font-semibold mb-2">Nom</label>
+                            <input type="text" id="name" name="name" 
+                                   value="{{ backend.name if backend else '' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   {{ 'readonly' if backend else 'required' }}>
+                        </div>
+                        <div>
+                            <label for="mode" class="block text-gray-700 font-semibold mb-2">Mode</label>
+                            <select id="mode" name="mode" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="http" {{ 'selected' if backend and backend.mode == 'http' else '' }}>HTTP</option>
+                                <option value="tcp" {{ 'selected' if backend and backend.mode == 'tcp' else '' }}>TCP</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="balance" class="block text-gray-700 font-semibold mb-2">Algorithme de Balance</label>
+                            <select id="balance" name="balance" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="roundrobin" {{ 'selected' if backend and backend.balance == 'roundrobin' else '' }}>Round Robin</option>
+                                <option value="leastconn" {{ 'selected' if backend and backend.balance == 'leastconn' else '' }}>Least Connections</option>
+                                <option value="source" {{ 'selected' if backend and backend.balance == 'source' else '' }}>Source</option>
+                                <option value="uri" {{ 'selected' if backend and backend.balance == 'uri' else '' }}>URI</option>
+                                <option value="url_param" {{ 'selected' if backend and backend.balance == 'url_param' else '' }}>URL Parameter</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeout Settings -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Paramètres de Timeout</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="timeout_connect" class="block text-gray-700 font-semibold mb-2">Timeout Connect</label>
+                            <input type="text" id="timeout_connect" name="timeout_connect"
+                                   value="{{ backend.timeout_connect if backend else '5s' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="timeout_server" class="block text-gray-700 font-semibold mb-2">Timeout Server</label>
+                            <input type="text" id="timeout_server" name="timeout_server"
+                                   value="{{ backend.timeout_server if backend else '50s' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="timeout_check" class="block text-gray-700 font-semibold mb-2">Timeout Check</label>
+                            <input type="text" id="timeout_check" name="timeout_check"
+                                   value="{{ backend.timeout_check if backend else '5s' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Check Settings -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Paramètres de Contrôle de Santé</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="check_enabled"
+                                       {{ 'checked' if backend and backend.check_enabled else '' }}
+                                       class="form-checkbox">
+                                <span class="text-gray-700 font-semibold">Activer les contrôles de santé</span>
+                            </label>
+                        </div>
+                        <div class="col-span-2">
+                            <label for="option_httpchk" class="block text-gray-700 font-semibold mb-2">Option HTTP Check</label>
+                            <input type="text" id="option_httpchk" name="option_httpchk"
+                                   value="{{ backend.option_httpchk if backend else '' }}"
+                                   placeholder="OPTIONS /health HTTP/1.1"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cookie Settings -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Paramètres des Cookies</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="cookie" class="block text-gray-700 font-semibold mb-2">Nom du Cookie</label>
+                            <input type="text" id="cookie" name="cookie"
+                                   value="{{ backend.cookie if backend else '' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="cookie_type" class="block text-gray-700 font-semibold mb-2">Type de Cookie</label>
+                            <select id="cookie_type" name="cookie_type" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="insert" {{ 'selected' if backend and backend.cookie_type == 'insert' else '' }}>Insert</option>
+                                <option value="rewrite" {{ 'selected' if backend and backend.cookie_type == 'rewrite' else '' }}>Rewrite</option>
+                                <option value="prefix" {{ 'selected' if backend and backend.cookie_type == 'prefix' else '' }}>Prefix</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Options -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Options Avancées</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="forwardfor"
+                                       {{ 'checked' if backend and backend.forwardfor else '' }}
+                                       class="form-checkbox">
+                                <span class="text-gray-700 font-semibold">X-Forwarded-For</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="option_redispatch"
+                                       {{ 'checked' if backend and backend.option_redispatch else '' }}
+                                       class="form-checkbox">
+                                <span class="text-gray-700 font-semibold">Option Redispatch</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label for="maxconn" class="block text-gray-700 font-semibold mb-2">Connexions Maximum</label>
+                            <input type="number" id="maxconn" name="maxconn"
+                                   value="{{ backend.maxconn if backend else '2000' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="retries" class="block text-gray-700 font-semibold mb-2">Nombre de Retries</label>
+                            <input type="number" id="retries" name="retries"
+                                   value="{{ backend.retries if backend else '3' }}"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex justify-between">
+                    <a href="{{ url_for('main.index') }}" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600">
+                        Annuler
+                    </a>
+                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+                        {{ 'Modifier' if backend else 'Ajouter' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
