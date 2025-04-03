@@ -128,3 +128,7 @@ def get_server_status(backend_name, server_name):
         status = server.check_status()
         return jsonify({'status': status})
     return jsonify({'status': 'unknown'}), 404
+
+def init_routes(service: StorageService):
+    global storage_service
+    storage_service = service
