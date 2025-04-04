@@ -16,20 +16,15 @@ def show_config():
 @config_bp.route('/config/validate', methods=['POST'])
 def validate_config():
     try:
-        # Récupérer la configuration du formulaire
         config_data = request.form.get('config_data')
-
-        # Écrire la configuration dans le fichier HAProxy
-        haproxy_config_path = '/etc/haproxy/haproxy.cfg'  # Remplace avec le chemin correct
+        haproxy_config_path = '/etc/haproxy/haproxy.cfg' 
         with open(haproxy_config_path, 'w') as config_file:
             config_file.write(config_data)
 
-        # Recharger HAProxy pour appliquer la nouvelle configuration
         subprocess.run(['systemctl', 'restart', 'haproxy'], check=True)
 
-        return redirect(url_for('main.index'))  # Rediriger vers l'index après validation
+        return redirect(url_for('main.index'))  
     except Exception as e:
-        # En cas d'erreur, retourner une erreur
         return f"Erreur lors de la validation de la configuration : {str(e)}", 500
 
 # Endpoint pour retourner vers l'index
