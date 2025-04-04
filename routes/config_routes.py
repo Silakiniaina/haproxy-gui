@@ -25,7 +25,7 @@ def validate_config():
             config_file.write(config_data)
 
         # Recharger HAProxy pour appliquer la nouvelle configuration
-        subprocess.run(['sudo', 'systemctl', 'reload', 'haproxy'], check=True)
+        subprocess.run(['systemctl', 'restart', 'haproxy'], check=True)
 
         return redirect(url_for('main.index'))  # Rediriger vers l'index après validation
     except Exception as e:
@@ -35,6 +35,16 @@ def validate_config():
 # Endpoint pour retourner vers l'index
 @config_bp.route('/config/back')
 def go_back():
+    return redirect(url_for('main.index'))
+
+# New endpoint to start HAProxy
+@config_bp.route('/config/start', methods=['POST'])
+def start_haproxy():
+    try:
+        subprocess.run(['systemctl', 'start', 'haproxy'], check=True)
+        flash('HAProxy started successfully!', 'success')
+    except Exception as e:
+        flash(f"Error starting HAProxy: {str(e)}", 'error')
     return redirect(url_for('main.index'))
 
 # Function to initialize the config generator
