@@ -1,5 +1,5 @@
 import subprocess
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for, flash
 from services.config_generator import HAProxyConfigGenerator
 
 config_bp = Blueprint('config', __name__)
@@ -45,6 +45,16 @@ def start_haproxy():
         flash('HAProxy started successfully!', 'success')
     except Exception as e:
         flash(f"Error starting HAProxy: {str(e)}", 'error')
+    return redirect(url_for('main.index'))
+
+# New endpoint to stop HAProxy
+@config_bp.route('/config/stop', methods=['POST'])
+def stop_haproxy():
+    try:
+        subprocess.run(['systemctl', 'stop', 'haproxy'], check=True)
+        flash('HAProxy stopped successfully!', 'success')
+    except Exception as e:
+        flash(f"Error stopping HAProxy: {str(e)}", 'error')
     return redirect(url_for('main.index'))
 
 # Function to initialize the config generator
